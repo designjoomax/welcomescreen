@@ -7,41 +7,14 @@
 <link rel="icon" href="assets/icon-red.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;1,400&display=swap">
-<script>
-  // Welcome hanya tampil sekali per sesi. Pakai #home atau ?welcome untuk mengatur ulang.
-  try {
-    if (/[?&]welcome\b/.test(location.search)) sessionStorage.removeItem("jx_welcome_seen");
-    if (location.hash === "#home" || sessionStorage.getItem("jx_welcome_seen")) document.documentElement.classList.add("wl-skip");
-  } catch (e) {}
-</script>
+<script src="welcome.js"></script>
 <style>
   :root{--red:#f80023;--bg:#fff;--ink:#141416;--muted:#6d6d76;--line:#e6e6ea;--card:#f6f6f7;--ease:cubic-bezier(.76,0,.24,1);--out:cubic-bezier(.22,.8,.24,1)}
   @media (prefers-color-scheme:dark){:root{--bg:#0f0f12;--ink:#f3f3f5;--muted:#9a9aa3;--line:#2c2c33;--card:#17171b}}
   *,*::before,*::after{box-sizing:border-box}
-  html.wl-lock,html.wl-lock body{height:100%;overflow:hidden}
   body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Poppins",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
   joomax-header:not(:defined){display:block;min-height:72px}
 
-  /* ---- Welcome screen ---- */
-  #welcome{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:var(--red);color:#fff;cursor:pointer;
-    transition:transform 1.05s var(--ease),border-radius 1.05s var(--ease);will-change:transform;touch-action:none}
-  #welcome.leaving{transform:translateY(-101%);border-radius:0 0 50% 50% / 0 0 14vh 14vh}
-  .wl-skip #welcome{display:none}
-  .wl-center{display:flex;flex-direction:column;align-items:center;gap:26px;padding:0 24px;text-align:center;transition:transform 1s var(--ease),opacity .6s ease}
-  .leaving .wl-center{transform:translateY(-8vh);opacity:0}
-  .wl-logo{width:clamp(130px,17vw,200px);height:auto;animation:pop 1.1s var(--out) both}
-  .wl-title{margin:0;font-size:clamp(1.4rem,2.6vw,2rem);font-weight:600;letter-spacing:-.01em;animation:rise .9s var(--out) .35s both}
-  .wl-hint{position:absolute;left:0;right:0;bottom:calc(76px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;gap:6px;margin:0;font-size:.82rem;opacity:.85;animation:rise .9s var(--out) .9s both}
-  .wl-hint svg{animation:bob 1.8s ease-in-out infinite}
-  .wl-credit{position:absolute;left:0;right:0;bottom:calc(34px + env(safe-area-inset-bottom,0px));margin:0;text-align:center;font-size:.8rem;font-style:italic;animation:rise .9s var(--out) .9s both}
-  @keyframes pop{from{opacity:0;transform:scale(.7) rotate(-12deg)}to{opacity:1;transform:none}}
-  @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
-  @keyframes bob{50%{transform:translateY(-5px)}}
-
-  /* ---- Home di bawah welcome ---- */
-  #site{transition:transform 1.05s var(--ease),opacity .9s ease}
-  .wl-lock #site{transform:translateY(10vh) scale(.97);opacity:.4}
-  .wl-lock .wl-open #site{transform:none;opacity:1}
   main{width:min(1100px,calc(100% - 40px));margin:0 auto;padding:clamp(48px,9vw,110px) 0 clamp(64px,9vw,120px)}
   h1{margin:0 0 14px;max-width:16ch;font-size:clamp(2.2rem,6vw,4.2rem);font-weight:600;line-height:1.08;letter-spacing:-.025em}
   .sub{max-width:44ch;margin:0 0 clamp(36px,6vw,64px);color:var(--muted);font-size:1.05rem}
@@ -52,23 +25,14 @@
   .card a{display:block;padding:7px 0;color:var(--muted);font-weight:500;transition:color .2s ease,transform .3s var(--out)}
   .card a:hover{color:var(--red);transform:translateX(4px)}
   a{text-decoration:none}
-  @media (prefers-reduced-motion:reduce){#welcome{transition:opacity .4s ease}#welcome.leaving{transform:none;opacity:0;border-radius:0}.wl-logo,.wl-title,.wl-hint,.wl-credit,.wl-hint svg{animation:none}#site{transition:none}}
+  
 </style>
 </head>
 <body class="wl-body">
 
-<div id="welcome" role="button" tabindex="0" aria-label="Welcome to Joomax. Klik untuk masuk">
-  <div class="wl-center">
-    <img class="wl-logo" src="assets/icon-white.png" alt="">
-    <h1 class="wl-title">Welcome to Joomax!</h1>
-  </div>
-  <p class="wl-hint"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 12.5 10 6.5l6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Klik atau geser ke atas</p>
-  <p class="wl-credit">create : fixs.arts studio</p>
-</div>
-
 <div id="site">
   <joomax-header sticky></joomax-header>
-  <main id="main" tabindex="-1">
+  <main id="main">
     <h1>Selamat datang di Joomax</h1>
     <p class="sub">Pilih area yang ingin kamu buka.</p>
     <div class="grid" id="cards"></div>
@@ -94,26 +58,6 @@
     cards.append(c);
   });
 
-  const w = document.getElementById("welcome"), root = document.documentElement;
-  if (root.classList.contains("wl-skip")) return;
-  root.classList.add("wl-lock");
-  let done = false;
-  const enter = () => {
-    if (done) return; done = true;
-    try { sessionStorage.setItem("jx_welcome_seen", "1"); } catch (e) {}
-    w.classList.add("leaving"); document.body.classList.add("wl-open");
-    // welcome naik ke atas, home di bawahnya ikut "naik" ke posisi normal
-    const fin = () => { w.remove(); root.classList.remove("wl-lock"); document.getElementById("main").focus({ preventScroll: true }); };
-    w.addEventListener("transitionend", (e) => { if (e.target === w && e.propertyName === "transform") fin(); });
-    setTimeout(() => { if (w.isConnected) fin(); }, 1500);
-  };
-  w.addEventListener("click", enter);
-  w.addEventListener("keydown", (e) => { if (["Enter", " ", "ArrowDown", "ArrowUp"].includes(e.key)) { e.preventDefault(); enter(); } });
-  w.addEventListener("wheel", (e) => { if (e.deltaY > 8) enter(); }, { passive: true });
-  let y0 = null;
-  w.addEventListener("touchstart", (e) => { y0 = e.touches[0].clientY; }, { passive: true });
-  w.addEventListener("touchmove", (e) => { if (y0 !== null && y0 - e.touches[0].clientY > 36) enter(); }, { passive: true });
-  w.focus({ preventScroll: true });
 })();
 </script>
 </body>
